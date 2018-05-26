@@ -1,0 +1,7 @@
+apache spark
+spark streaming
+structured streaming
+dataframe
+spark sql
+mapreduce
+map reduce

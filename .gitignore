@@ -1,0 +1,8 @@
+.idea
+target
+spark-warehouse
+spark_test.iml
+logs
+stat*
+hadoop_test.iml
+mapreduce_test.log
