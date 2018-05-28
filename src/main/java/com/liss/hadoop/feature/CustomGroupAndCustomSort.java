@@ -148,8 +148,8 @@ public class CustomGroupAndCustomSort {
         job.setOutputValueClass(LongWritable.class);
 
         // 设置自定义分组规则
-//        job.setSortComparatorClass(MySortComparator.class);
-//        job.setGroupingComparatorClass(MyGroupingComparator.class);
+        job.setSortComparatorClass(MySortComparator.class);
+        job.setGroupingComparatorClass(MyGroupingComparator.class);
 
         // 判断output文件夹是否存在，如果存在则删除
         Path path = new Path(OUTPUT_PATH);
