@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import com.liss.hadoop.utils.FileUtils;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 
@@ -34,9 +35,9 @@ public class ReduceSideJoin {
     private static final Logger logger = LoggerFactory.getLogger(ReduceSideJoin.class);
 
     public static class CombineValues implements WritableComparable<CombineValues> {
-        private Text joinKey;//链接关键字
+        private Text joinKey;//join 字段
         private Text flag;//文件来源标志
-        private Text secondPart;//除了链接键外的其他部分
+        private Text secondPart;// 除了join字段得其他字段，一般只包含要返回的字段
 
         public void setJoinKey(Text joinKey) {
             this.joinKey = joinKey;
@@ -94,18 +95,19 @@ public class ReduceSideJoin {
     }
 
 
-    public static class LeftOutJoinMapper extends Mapper<Object, Text, Text, CombineValues> {
+    public static class LeftOutJoinMapper extends Mapper<LongWritable, Text, Text, CombineValues> {
         private CombineValues combineValues = new CombineValues();
         private Text flag = new Text();
         private Text joinKey = new Text();
         private Text secondPart = new Text();
 
         @Override
-        protected void map(Object key, Text value, Context context)
+        protected void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
-            //获得文件输入路径
+            // 获得文件输入路径
             String pathName = ((FileSplit) context.getInputSplit()).getPath().toString();
-            //数据来自tb_dim_city.dat文件,标志即为"0"
+            // 数据来自left_table文件,标志位为"0"
+            //  id     name  orderid  city_code  is_show
             if (pathName.endsWith("left_table.txt")) {
                 String[] valueItems = value.toString().split("\\s+");
                 //过滤格式错误的记录
@@ -120,7 +122,8 @@ public class ReduceSideJoin {
                 combineValues.setSecondPart(secondPart);
                 context.write(combineValues.getJoinKey(), combineValues);
 
-            }//数据来自于tb_user_profiles.dat，标志即为"1"
+            }// 数据来自于tb_user_profiles.dat，标志即为"1"
+             //  userID   network     flow    cityID
             else if (pathName.endsWith("right_table.txt")) {
                 String[] valueItems = value.toString().split("\\s+");
                 //过滤格式错误的记录
@@ -139,9 +142,9 @@ public class ReduceSideJoin {
     }
 
     public static class LeftOutJoinReducer extends Reducer<Text, CombineValues, Text, Text> {
-        //存储一个分组中的左表信息
+        //存储左表信息
         private ArrayList<Text> leftTable = new ArrayList<Text>();
-        //存储一个分组中的右表信息
+        //存储右表信息
         private ArrayList<Text> rightTable = new ArrayList<Text>();
         private Text secondPar = null;
         private Text output = new Text();
@@ -163,21 +166,27 @@ public class ReduceSideJoin {
              */
             for (CombineValues cv : value) {
                 secondPar = new Text(cv.getSecondPart().toString());
-                //左表tb_dim_city
+                //左表
                 if ("0".equals(cv.getFlag().toString().trim())) {
                     leftTable.add(secondPar);
                 }
-                //右表tb_user_profiles
+                //右表
                 else if ("1".equals(cv.getFlag().toString().trim())) {
                     rightTable.add(secondPar);
                 }
             }
-            logger.info("tb_dim_city:" + leftTable.toString());
-            logger.info("tb_user_profiles:" + rightTable.toString());
+            logger.info("left_table:" + leftTable.toString());
+            logger.info("right_table:" + rightTable.toString());
             for (Text leftPart : leftTable) {
-                for (Text rightPart : rightTable) {
-                    output.set(leftPart + "\t" + rightPart);
+                // 如果为 join，不需要判断是否为空
+                if(rightTable.isEmpty()){
+                    output.set(leftPart + "\t" + null);
                     context.write(key, output);
+                }else {
+                    for (Text rightPart : rightTable) {
+                        output.set(leftPart + "\t" + rightPart);
+                        context.write(key, output);
+                    }
                 }
             }
         }
@@ -188,6 +197,7 @@ public class ReduceSideJoin {
 
     public static void main(String[] args) throws Exception {
 
+        System.setProperty("hadoop.home.dir", "D:\\hadoop-2.6.4");
         Configuration conf = new Configuration(); //获得配置文件对象
         Job job = Job.getInstance(conf, "LeftOutJoinMR");
         job.setJarByClass(ReduceSideJoin.class);

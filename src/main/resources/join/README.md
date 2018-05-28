@@ -2,7 +2,6 @@
 table1(左表):tb_dim_city(id int,name string,orderid int,city_code,is_show)
 ```
  id     name  orderid  city_code  is_show
- 0       其他        9999     9999         0
  1       长春        1        901          1
  2       吉林        2        902          1
  3       四平        3        903          1
@@ -26,6 +25,7 @@ table2(右表)：tb_user_profiles(userID int,userName string,network string,doub
 
 结果
 ```
+city
  1   长春  1   901 1   1   2G  123
  1   长春  1   901 1   3   3G  555
  2   吉林  2   902 1   2   3G  333

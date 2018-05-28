@@ -40,8 +40,8 @@ public class DefaultGroupAndSort {
         }
     }
 
-    private static final String INPUT_PATH = "D:/GitWorkspace/spark_test/src/main/resources/GroupNumber.txt";
-    private static final String OUTPUT_PATH = "D:/GitWorkspace/spark_test/src/main/resources/stats_default_group_and_sort";
+    private static final String INPUT_PATH = "D:/GitWorkspace/hadoop_test/src/main/resources/sort/GroupNumber.txt";
+    private static final String OUTPUT_PATH = "D:/GitWorkspace/hadoop_test/src/main/resources/sort/stats_default_group_and_sort";
 
     public static void main(String[] args) throws Exception {
         System.setProperty("hadoop.home.dir", "D:\\hadoop-2.6.4");

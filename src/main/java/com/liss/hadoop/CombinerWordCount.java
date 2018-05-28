@@ -88,8 +88,8 @@ public class CombinerWordCount {
         job.setReducerClass(MyReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(LongWritable.class);
-        FileInputFormat.addInputPath(job, new Path("D:/GitWorkspace/spark_test/src/main/resources/WordCount.txt"));
-        FileOutputFormat.setOutputPath(job, new Path("D:/GitWorkspace/spark_test/src/main/resources/stats_combine"));
+        FileInputFormat.addInputPath(job, new Path("D:/GitWorkspace/hadoop_test/src/main/resources/WordCount.txt"));
+        FileOutputFormat.setOutputPath(job, new Path("D:/GitWorkspace/hadoop_test/src/main/resources/stats_combine"));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 

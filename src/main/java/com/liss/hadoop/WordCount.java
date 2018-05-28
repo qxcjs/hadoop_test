@@ -66,13 +66,13 @@ public class WordCount {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
         // 判断output文件夹是否存在，如果存在则删除
-        Path path = new Path("D:/GitWorkspace/spark_test/src/main/resources/stats");
+        Path path = new Path("D:/GitWorkspace/hadoop_test/src/main/resources/stats");
         FileSystem fileSystem = path.getFileSystem(conf);// 根据path找到这个文件
         if (fileSystem.exists(path)) {
             fileSystem.delete(path, true);// true的意思是，就算output有东西，也一带删除
         }
-        FileInputFormat.addInputPath(job, new Path("D:/GitWorkspace/spark_test/src/main/resources/WordCount.txt"));
-        FileOutputFormat.setOutputPath(job, new Path("D:/GitWorkspace/spark_test/src/main/resources/stats"));
+        FileInputFormat.addInputPath(job, new Path("D:/GitWorkspace/hadoop_test/src/main/resources/WordCount.txt"));
+        FileOutputFormat.setOutputPath(job, new Path("D:/GitWorkspace/hadoop_test/src/main/resources/stats"));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 }
